@@ -5,20 +5,18 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <script src="js/angular-1.4.0_beta6.js"></script>
     <script src="js/router.es5.js"></script>
+    <!--components -->
+    <script src="components/navigation/navigation.js"></script>
+    <script src="components/home/home.js"></script>
+    <script src="components/footer/footer.js"></script>
+    <!--application-->
+    <script src="app.js"></script>
 </head>
 <body ng-controller="MainController">
 
-<h1>{{title}}</h1>
+<header ng-viewport="navigation"></header>
+<div ng-viewport="main"></div>
+<footer ng-viewport="footer"></footer>
 
-<div ng-viewport></div>
-
-
-<script>
-    var module = angular.module("AngularApp", ["ngNewRouter"]);
-    module.controller("MainController", function ($scope, $router) {
-        $scope.title = "This is demo of application";
-
-    });
-</script>
 </body>
 </html>
