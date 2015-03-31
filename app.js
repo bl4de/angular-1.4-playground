@@ -2,7 +2,14 @@
  * Created by rafal.janicki on 2015-03-31.
  */
 // declarations
-var module, _modules = ["ngNewRouter", "AngularApp.navigation", "AngularApp.home", "AngularApp.footer"];
+var module,
+    _modules = [
+        "ngNewRouter",
+        "AngularApp.navigation",
+        "AngularApp.home",
+        "AngularApp.footer",
+        "AngularApp.about"
+    ];
 
 // instantiate of app
 module = angular.module("AngularApp", _modules);
@@ -13,12 +20,16 @@ module.controller("MainController", function ($scope, $router) {
     $router.config([
         {
             path: "/",
+            redirectTo: "/home"
+        },
+        {
+            path: "/home",
             component: {
                 navigation: "navigation",
                 main: "home",
                 footer: "footer"
             }
-        }, // Maps the default path to navigation component.
+        },
         {
             path: "/profile",
             component: {
@@ -26,6 +37,14 @@ module.controller("MainController", function ($scope, $router) {
                 main: "profile",
                 footer: "footer"
             }
-        } // Maps /profile to navigation component.
+        },
+        {
+            path: "/about",
+            component: {
+                navigation: "navigation",
+                main: "about",
+                footer: "footer"
+            }
+        }
     ]);
 });
