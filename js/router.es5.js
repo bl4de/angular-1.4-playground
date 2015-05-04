@@ -22,8 +22,6 @@ angular.module('ngNewRouter', [])
     .directive('a', anchorLinkDirective)
 
 
-
-
 /*
  * A module for inspecting controller constructors
  */
@@ -68,7 +66,7 @@ function $controllerIntrospectorProvider() {
                     name = $componentLoader.component(name);
                     return newOnControllerRegistered(name, constructor);
                 };
-                while(controllers.length > 0) {
+                while (controllers.length > 0) {
                     var rule = controllers.pop();
                     onControllerRegistered(rule.name, rule.config);
                 }
@@ -126,7 +124,7 @@ function ngViewportDirective($animate, $injector, $q, $router) {
         priority: 400,
         require: ['?^^ngViewport', 'ngViewport'],
         link: viewportLink,
-        controller: function() {},
+        controller: function () {},
         controllerAs: '$$ngViewport'
     };
 
@@ -159,7 +157,7 @@ function ngViewportDirective($animate, $injector, $q, $router) {
             }
             if (currentElement) {
                 previousLeaveAnimation = $animate.leave(currentElement);
-                previousLeaveAnimation.then(function() {
+                previousLeaveAnimation.then(function () {
                     previousLeaveAnimation = null;
                 });
                 currentElement = null;
@@ -167,13 +165,13 @@ function ngViewportDirective($animate, $injector, $q, $router) {
         }
 
         router.registerViewport({
-            canDeactivate: function(instruction) {
+            canDeactivate: function (instruction) {
                 if (currentController && currentController.canDeactivate) {
                     return invoke(currentController.canDeactivate, currentController, instruction);
                 }
                 return true;
             },
-            activate: function(instruction) {
+            activate: function (instruction) {
                 var nextInstruction = serializeInstruction(instruction);
                 if (nextInstruction === previousInstruction) {
                     return;
@@ -183,7 +181,7 @@ function ngViewportDirective($animate, $injector, $q, $router) {
                 myCtrl.$$router = instruction.router;
                 myCtrl.$$template = instruction.template;
                 var componentName = instruction.component;
-                var clone = $transclude(newScope, function(clone) {
+                var clone = $transclude(newScope, function (clone) {
                     $animate.enter(clone, null, currentElement || $element);
                     cleanupLastView();
                 });
@@ -235,7 +233,7 @@ function ngViewportFillContentDirective($compile) {
         restrict: 'EA',
         priority: -400,
         require: 'ngViewport',
-        link: function(scope, $element, attrs, ctrl) {
+        link: function (scope, $element, attrs, ctrl) {
             var template = ctrl.$$template;
             $element.html(template);
             var link = $compile($element.contents());
@@ -307,9 +305,9 @@ function ngLinkDirective($router, $location, $parse) {
                 url = '.' + router.generate(routeName, params);
                 elt.attr('href', url);
             } else {
-                scope.$watch(function() {
+                scope.$watch(function () {
                     return routeParamsGetter(scope);
-                }, function(params) {
+                }, function (params) {
                     url = '.' + router.generate(routeName, params);
                     elt.attr('href', url);
                 }, true);
@@ -326,7 +324,7 @@ ngLinkDirective.$inject = ["$router", "$location", "$parse"];
 function anchorLinkDirective($router) {
     return {
         restrict: 'E',
-        link: function(scope, element) {
+        link: function (scope, element) {
             // If the linked element is not an anchor tag anymore, do nothing
             if (element[0].nodeName.toLowerCase() !== 'a') return;
 
@@ -334,7 +332,7 @@ function anchorLinkDirective($router) {
             var hrefAttrName = Object.prototype.toString.call(element.prop('href')) === '[object SVGAnimatedString]' ?
                 'xlink:href' : 'href';
 
-            element.on('click', function(event) {
+            element.on('click', function (event) {
                 var href = element.attr(hrefAttrName);
                 if (!href) {
                     event.preventDefault();
@@ -360,7 +358,7 @@ function setupRoutersStepFactory() {
  */
 function initLocalsStepFactory() {
     return function initLocals(instruction) {
-        return instruction.router.traverseInstruction(instruction, function(instruction) {
+        return instruction.router.traverseInstruction(instruction, function (instruction) {
             return instruction.locals = {
                 $router: instruction.router,
                 $routeParams: (instruction.params || {})
@@ -374,13 +372,13 @@ function initLocalsStepFactory() {
  */
 function initControllersStepFactory($controller, $componentLoader) {
     return function initControllers(instruction) {
-        return instruction.router.traverseInstruction(instruction, function(instruction) {
+        return instruction.router.traverseInstruction(instruction, function (instruction) {
             var controllerName = $componentLoader.controllerName(instruction.component);
             var locals = instruction.locals;
             var ctrl;
             try {
                 ctrl = $controller(controllerName, locals);
-            } catch(e) {
+            } catch (e) {
                 console.warn && console.warn('Could not instantiate controller', controllerName);
                 ctrl = $controller(angular.noop, locals);
             }
@@ -405,7 +403,7 @@ function runCanActivateHookStepFactory($injector) {
     }
 
     return function runCanActivateHook(instruction) {
-        return instruction.router.traverseInstruction(instruction, function(instruction) {
+        return instruction.router.traverseInstruction(instruction, function (instruction) {
             var controller = instruction.controller;
             return !controller.canActivate || invoke(controller.canActivate, controller, instruction);
         });
@@ -415,7 +413,7 @@ runCanActivateHookStepFactory.$inject = ["$injector"];
 
 function loadTemplatesStepFactory($componentLoader, $templateRequest) {
     return function loadTemplates(instruction) {
-        return instruction.router.traverseInstruction(instruction, function(instruction) {
+        return instruction.router.traverseInstruction(instruction, function (instruction) {
             var componentTemplateUrl = $componentLoader.template(instruction.component);
             return $templateRequest(componentTemplateUrl).then(function (templateHtml) {
                 return instruction.template = templateHtml;
@@ -454,7 +452,7 @@ function pipelineProvider() {
                 return $injector.get(step);
             });
             return {
-                process: function(instruction) {
+                process: function (instruction) {
                     // make a copy
                     var steps = stepConfiguration.slice(0);
 
@@ -520,7 +518,7 @@ function $componentLoaderProvider() {
          * @name $componentLoaderProvider#setCtrlNameMapping
          * @description takes a function for mapping component names to component controller names
          */
-        setCtrlNameMapping: function(newFn) {
+        setCtrlNameMapping: function (newFn) {
             componentToCtrl = newFn;
             return this;
         },
@@ -538,7 +536,7 @@ function $componentLoaderProvider() {
          * @name $componentLoaderProvider#setTemplateMapping
          * @description takes a function for mapping component names to component template URLs
          */
-        setTemplateMapping: function(newFn) {
+        setTemplateMapping: function (newFn) {
             componentToTemplate = newFn;
             return this;
         }
@@ -621,6 +619,7 @@ angular.module('ngNewRouter').factory('$$rootRouter', ['$q', '$$grammar', '$$pip
         // }
         return descriptors;
     }
+
     function superDescriptor(homeObject, name) {
         var proto = $getPrototypeOf(homeObject);
         do {
@@ -631,9 +630,11 @@ angular.module('ngNewRouter').factory('$$rootRouter', ['$q', '$$grammar', '$$pip
         } while (proto);
         return undefined;
     }
+
     function superCall(self, homeObject, name, args) {
         return superGet(self, homeObject, name).apply(self, args);
     }
+
     function superGet(self, homeObject, name) {
         var descriptor = superDescriptor(homeObject, name);
         if (descriptor) {
@@ -655,23 +656,23 @@ angular.module('ngNewRouter').factory('$$rootRouter', ['$q', '$$grammar', '$$pip
         this.pipeline = pipeline;
     };
     (createClass)(Router, {
-        childRouter: function() {
+        childRouter: function () {
             var name = arguments[0] !== (void 0) ? arguments[0] : 'default';
             if (!this.children[name]) {
                 this.children[name] = new ChildRouter(this, name);
             }
             return this.children[name];
         },
-        registerViewport: function(view) {
+        registerViewport: function (view) {
             var name = arguments[1] !== (void 0) ? arguments[1] : 'default';
             this.ports[name] = view;
             return this.renavigate();
         },
-        config: function(mapping) {
+        config: function (mapping) {
             this.registry.config(this.name, mapping);
             return this.renavigate();
         },
-        navigate: function(url) {
+        navigate: function (url) {
             var $__0 = this;
             if (this.navigating) {
                 return $q.when();
@@ -683,75 +684,75 @@ angular.module('ngNewRouter').factory('$$rootRouter', ['$q', '$$grammar', '$$pip
             }
             this._startNavigating();
             instruction.router = this;
-            return this.pipeline.process(instruction).then((function() {
+            return this.pipeline.process(instruction).then((function () {
                 return $__0._finishNavigating();
-            }), (function() {
+            }), (function () {
                 return $__0._finishNavigating();
-            })).then((function() {
+            })).then((function () {
                 return instruction.canonicalUrl;
             }));
         },
-        _startNavigating: function() {
+        _startNavigating: function () {
             this.navigating = true;
         },
-        _finishNavigating: function() {
+        _finishNavigating: function () {
             this.navigating = false;
         },
-        makeDescendantRouters: function(instruction) {
-            this.traverseInstructionSync(instruction, (function(instruction, childInstruction) {
+        makeDescendantRouters: function (instruction) {
+            this.traverseInstructionSync(instruction, (function (instruction, childInstruction) {
                 childInstruction.router = instruction.router.childRouter(childInstruction.component);
             }));
         },
-        traverseInstructionSync: function(instruction, fn) {
+        traverseInstructionSync: function (instruction, fn) {
             var $__0 = this;
-            forEach(instruction.viewports, (function(childInstruction, viewportName) {
+            forEach(instruction.viewports, (function (childInstruction, viewportName) {
                 return fn(instruction, childInstruction);
             }));
-            forEach(instruction.viewports, (function(childInstruction) {
+            forEach(instruction.viewports, (function (childInstruction) {
                 return $__0.traverseInstructionSync(childInstruction, fn);
             }));
         },
-        traverseInstruction: function(instruction, fn) {
+        traverseInstruction: function (instruction, fn) {
             if (!instruction) {
                 return $q.when();
             }
-            return mapObjAsync(instruction.viewports, (function(childInstruction, viewportName) {
+            return mapObjAsync(instruction.viewports, (function (childInstruction, viewportName) {
                 return boolToPromise(fn(childInstruction, viewportName));
-            })).then((function() {
-                return mapObjAsync(instruction.viewports, (function(childInstruction, viewportName) {
+            })).then((function () {
+                return mapObjAsync(instruction.viewports, (function (childInstruction, viewportName) {
                     return childInstruction.router.traverseInstruction(childInstruction, fn);
                 }));
             }));
         },
-        activatePorts: function(instruction) {
-            return this.queryViewports((function(port, name) {
+        activatePorts: function (instruction) {
+            return this.queryViewports((function (port, name) {
                 return port.activate(instruction.viewports[name]);
-            })).then((function() {
-                return mapObjAsync(instruction.viewports, (function(instruction) {
+            })).then((function () {
+                return mapObjAsync(instruction.viewports, (function (instruction) {
                     return instruction.router.activatePorts(instruction);
                 }));
             }));
         },
-        canDeactivatePorts: function(instruction) {
-            return this.traversePorts((function(port, name) {
+        canDeactivatePorts: function (instruction) {
+            return this.traversePorts((function (port, name) {
                 return boolToPromise(port.canDeactivate(instruction.viewports[name]));
             }));
         },
-        traversePorts: function(fn) {
+        traversePorts: function (fn) {
             var $__0 = this;
-            return this.queryViewports(fn).then((function() {
-                return mapObjAsync($__0.children, (function(child) {
+            return this.queryViewports(fn).then((function () {
+                return mapObjAsync($__0.children, (function (child) {
                     return child.traversePorts(fn);
                 }));
             }));
         },
-        queryViewports: function(fn) {
+        queryViewports: function (fn) {
             return mapObjAsync(this.ports, fn);
         },
-        recognize: function(url) {
+        recognize: function (url) {
             return this.registry.recognize(url);
         },
-        renavigate: function() {
+        renavigate: function () {
             var renavigateDestination = this.previousUrl || this.lastNavigationAttempt;
             if (!this.navigating && renavigateDestination) {
                 return this.navigate(renavigateDestination);
@@ -759,24 +760,30 @@ angular.module('ngNewRouter').factory('$$rootRouter', ['$q', '$$grammar', '$$pip
                 return $q.when();
             }
         },
-        generate: function(name, params) {
+        generate: function (name, params) {
             return this.registry.generate(name, params);
         }
     }, {});
-    Object.defineProperty(Router, "parameters", {get: function() {
-        return [[Grammar], [Pipeline], [], []];
-    }});
-    Object.defineProperty(Router.prototype.generate, "parameters", {get: function() {
-        return [[$traceurRuntime.type.string], []];
-    }});
+    Object.defineProperty(Router, "parameters", {
+        get: function () {
+            return [[Grammar], [Pipeline], [], []];
+        }
+    });
+    Object.defineProperty(Router.prototype.generate, "parameters", {
+        get: function () {
+            return [[$traceurRuntime.type.string], []];
+        }
+    });
     var RootRouter = function RootRouter(grammar, pipeline) {
         superCall(this, $RootRouter.prototype, "constructor", [grammar, pipeline, null, '/']);
     };
     var $RootRouter = RootRouter;
     (createClass)(RootRouter, {}, {}, Router);
-    Object.defineProperty(RootRouter, "parameters", {get: function() {
-        return [[Grammar], [Pipeline]];
-    }});
+    Object.defineProperty(RootRouter, "parameters", {
+        get: function () {
+            return [[Grammar], [Pipeline]];
+        }
+    });
     var ChildRouter = function ChildRouter(parent, name) {
         superCall(this, $ChildRouter.prototype, "constructor", [parent.registry, parent.pipeline, parent, name]);
         this.parent = parent;
@@ -784,23 +791,27 @@ angular.module('ngNewRouter').factory('$$rootRouter', ['$q', '$$grammar', '$$pip
     var $ChildRouter = ChildRouter;
     (createClass)(ChildRouter, {}, {}, Router);
     function forEach(obj, fn) {
-        Object.keys(obj).forEach((function(key) {
+        Object.keys(obj).forEach((function (key) {
             return fn(obj[key], key);
         }));
     }
+
     function mapObjAsync(obj, fn) {
         return $q.all(mapObj(obj, fn));
     }
+
     function mapObj(obj, fn) {
         var result = [];
-        Object.keys(obj).forEach((function(key) {
+        Object.keys(obj).forEach((function (key) {
             return result.push(fn(obj[key], key));
         }));
         return result;
     }
+
     function boolToPromise(value) {
         return value ? $q.when(value) : $q.reject();
     }
+
     return new RootRouter($$grammar, $$pipeline);
 }]);
 
@@ -867,6 +878,7 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
         // }
         return descriptors;
     }
+
     function superDescriptor(homeObject, name) {
         var proto = $getPrototypeOf(homeObject);
         do {
@@ -877,9 +889,11 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
         } while (proto);
         return undefined;
     }
+
     function superCall(self, homeObject, name, args) {
         return superGet(self, homeObject, name).apply(self, args);
     }
+
     function superGet(self, homeObject, name) {
         var descriptor = superDescriptor(homeObject, name);
         if (descriptor) {
@@ -891,37 +905,41 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
     }
 
     "use strict";
-    var RouteRecognizer = (function() {
-        var map = (function() {
+    var RouteRecognizer = (function () {
+        var map = (function () {
             function Target(path, matcher, delegate) {
                 this.path = path;
                 this.matcher = matcher;
                 this.delegate = delegate;
             }
-            Target.prototype = {to: function(target, callback) {
-                var delegate = this.delegate;
-                if (delegate && delegate.willAddRoute) {
-                    target = delegate.willAddRoute(this.matcher.target, target);
-                }
-                this.matcher.add(this.path, target);
-                if (callback) {
-                    if (callback.length === 0) {
-                        throw new Error("You must have an argument in the function passed to `to`");
+
+            Target.prototype = {
+                to: function (target, callback) {
+                    var delegate = this.delegate;
+                    if (delegate && delegate.willAddRoute) {
+                        target = delegate.willAddRoute(this.matcher.target, target);
                     }
-                    this.matcher.addChild(this.path, target, callback, this.delegate);
+                    this.matcher.add(this.path, target);
+                    if (callback) {
+                        if (callback.length === 0) {
+                            throw new Error("You must have an argument in the function passed to `to`");
+                        }
+                        this.matcher.addChild(this.path, target, callback, this.delegate);
+                    }
+                    return this;
                 }
-                return this;
-            }};
+            };
             function Matcher(target) {
                 this.routes = {};
                 this.children = {};
                 this.target = target;
             }
+
             Matcher.prototype = {
-                add: function(path, handler) {
+                add: function (path, handler) {
                     this.routes[path] = handler;
                 },
-                addChild: function(path, target, callback, delegate) {
+                addChild: function (path, target, callback, delegate) {
                     var matcher = new Matcher(target);
                     this.children[path] = matcher;
                     var match = generateMatch(path, matcher, delegate);
@@ -932,7 +950,7 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
                 }
             };
             function generateMatch(startingPath, matcher, delegate) {
-                return function(path, nestedCallback) {
+                return function (path, nestedCallback) {
                     var fullPath = startingPath + path;
                     if (nestedCallback) {
                         nestedCallback(generateMatch(fullPath, matcher, delegate));
@@ -941,6 +959,7 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
                     }
                 };
             }
+
             function addRoute(routeArray, path, handler) {
                 var len = 0;
                 for (var i = 0,
@@ -954,6 +973,7 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
                 };
                 routeArray.push(route);
             }
+
             function eachRoute(baseRoute, matcher, callback, binding) {
                 var routes = matcher.routes;
                 for (var path in routes) {
@@ -968,10 +988,11 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
                     }
                 }
             }
-            return function(callback, addRouteCallback) {
+
+            return function (callback, addRouteCallback) {
                 var matcher = new Matcher();
                 callback(generateMatch("", matcher, this.delegate));
-                eachRoute([], matcher, function(route) {
+                eachRoute([], matcher, function (route) {
                     if (addRouteCallback) {
                         addRouteCallback(this, route);
                     } else {
@@ -982,14 +1003,17 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
         }());
         var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];
         var escapeRegex = new RegExp('(\\' + specials.join('|\\') + ')', 'g');
+
         function isArray(test) {
             return Object.prototype.toString.call(test) === "[object Array]";
         }
+
         function StaticSegment(string) {
             this.string = string;
         }
+
         StaticSegment.prototype = {
-            eachChar: function(callback) {
+            eachChar: function (callback) {
                 var string = this.string,
                     ch;
                 for (var i = 0,
@@ -998,54 +1022,57 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
                     callback({validChars: ch});
                 }
             },
-            regex: function() {
+            regex: function () {
                 return this.string.replace(escapeRegex, '\\$1');
             },
-            generate: function() {
+            generate: function () {
                 return this.string;
             }
         };
         function DynamicSegment(name) {
             this.name = name;
         }
+
         DynamicSegment.prototype = {
-            eachChar: function(callback) {
+            eachChar: function (callback) {
                 callback({
                     invalidChars: "/",
                     repeat: true
                 });
             },
-            regex: function() {
+            regex: function () {
                 return "([^/]+)";
             },
-            generate: function(params) {
+            generate: function (params) {
                 return params[this.name];
             }
         };
         function StarSegment(name) {
             this.name = name;
         }
+
         StarSegment.prototype = {
-            eachChar: function(callback) {
+            eachChar: function (callback) {
                 callback({
                     invalidChars: "",
                     repeat: true
                 });
             },
-            regex: function() {
+            regex: function () {
                 return "(.+)";
             },
-            generate: function(params) {
+            generate: function (params) {
                 return params[this.name];
             }
         };
         function EpsilonSegment() {}
+
         EpsilonSegment.prototype = {
-            eachChar: function() {},
-            regex: function() {
+            eachChar: function () {},
+            regex: function () {
                 return "";
             },
-            generate: function() {
+            generate: function () {
                 return "";
             }
         };
@@ -1076,12 +1103,14 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
             }
             return results;
         }
+
         function State(charSpec) {
             this.charSpec = charSpec;
             this.nextStates = [];
         }
+
         State.prototype = {
-            get: function(charSpec) {
+            get: function (charSpec) {
                 var nextStates = this.nextStates;
                 for (var i = 0,
                          l = nextStates.length; i < l; i++) {
@@ -1093,7 +1122,7 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
                     }
                 }
             },
-            put: function(charSpec) {
+            put: function (charSpec) {
                 var state;
                 if (state = this.get(charSpec)) {
                     return state;
@@ -1105,7 +1134,7 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
                 }
                 return state;
             },
-            match: function(ch) {
+            match: function (ch) {
                 var nextStates = this.nextStates,
                     child,
                     charSpec,
@@ -1129,7 +1158,7 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
             }
         };
         function sortSolutions(states) {
-            return states.sort(function(a, b) {
+            return states.sort(function (a, b) {
                 if (a.types.stars !== b.types.stars) {
                     return a.types.stars - b.types.stars;
                 }
@@ -1150,6 +1179,7 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
                 return 0;
             });
         }
+
         function recognizeChar(states, ch) {
             var nextStates = [];
             for (var i = 0,
@@ -1159,14 +1189,18 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
             }
             return nextStates;
         }
-        var oCreate = Object.create || function(proto) {
+
+        var oCreate = Object.create || function (proto) {
                 function F() {}
+
                 F.prototype = proto;
                 return new F();
             };
+
         function RecognizeResults(queryParams) {
             this.queryParams = queryParams || {};
         }
+
         RecognizeResults.prototype = oCreate({
             splice: Array.prototype.splice,
             slice: Array.prototype.slice,
@@ -1197,19 +1231,21 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
             }
             return result;
         }
+
         function addSegment(currentState, segment) {
-            segment.eachChar(function(ch) {
+            segment.eachChar(function (ch) {
                 var state;
                 currentState = currentState.put(ch);
             });
             return currentState;
         }
-        var RouteRecognizer = function() {
+
+        var RouteRecognizer = function () {
             this.rootState = new State();
             this.names = {};
         };
         RouteRecognizer.prototype = {
-            add: function(routes, options) {
+            add: function (routes, options) {
                 var currentState = this.rootState,
                     regex = "^",
                     types = {
@@ -1259,7 +1295,7 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
                     };
                 }
             },
-            handlersFor: function(name) {
+            handlersFor: function (name) {
                 var route = this.names[name],
                     result = [];
                 if (!route) {
@@ -1271,10 +1307,10 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
                 }
                 return result;
             },
-            hasRoute: function(name) {
+            hasRoute: function (name) {
                 return !!this.names[name];
             },
-            generate: function(name, params) {
+            generate: function (name, params) {
                 var route = this.names[name],
                     output = "";
                 if (!route) {
@@ -1298,7 +1334,7 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
                 }
                 return output;
             },
-            generateQueryString: function(params, handlers) {
+            generateQueryString: function (params, handlers) {
                 var pairs = [];
                 var keys = [];
                 for (var key in params) {
@@ -1331,7 +1367,7 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
                 }
                 return "?" + pairs.join("&");
             },
-            parseQueryString: function(queryString) {
+            parseQueryString: function (queryString) {
                 var pairs = queryString.split("&"),
                     queryParams = {};
                 for (var i = 0; i < pairs.length; i++) {
@@ -1360,7 +1396,7 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
                 }
                 return queryParams;
             },
-            recognize: function(path) {
+            recognize: function (path) {
                 var states = [this.rootState],
                     pathLen,
                     i,
@@ -1414,7 +1450,7 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
         this.rules = {};
     };
     (createClass)(Grammar, {
-        config: function(name, config) {
+        config: function (name, config) {
             if (name === 'app') {
                 name = '/';
             }
@@ -1423,7 +1459,7 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
             }
             this.rules[name].config(config);
         },
-        recognize: function(url) {
+        recognize: function (url) {
             var componentName = arguments[1] !== (void 0) ? arguments[1] : '/';
             var $__0 = this;
             if (typeof url === 'undefined') {
@@ -1447,28 +1483,28 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
             if (lastParams && lastParams.childRoute) {
                 var childUrl = '/' + lastParams.childRoute;
                 instruction.canonicalUrl = lastHandler.rewroteUrl.substr(0, lastHandler.rewroteUrl.length - (lastParams.childRoute.length + 1));
-                forEach(lastHandler.components, (function(componentName, viewportName) {
+                forEach(lastHandler.components, (function (componentName, viewportName) {
                     instruction.viewports[viewportName] = $__0.recognize(childUrl, componentName);
                 }));
                 instruction.canonicalUrl += instruction.viewports[Object.keys(instruction.viewports)[0]].canonicalUrl;
             } else {
                 instruction.canonicalUrl = lastHandler.rewroteUrl;
-                forEach(lastHandler.components, (function(componentName, viewportName) {
+                forEach(lastHandler.components, (function (componentName, viewportName) {
                     instruction.viewports[viewportName] = {viewports: {}};
                 }));
             }
-            forEach(instruction.viewports, (function(instruction, componentName) {
+            forEach(instruction.viewports, (function (instruction, componentName) {
                 instruction.component = lastHandler.components[componentName];
                 instruction.params = lastParams;
             }));
             return instruction;
         },
-        generate: function(name, params) {
+        generate: function (name, params) {
             var path = '';
             var solution;
             do {
                 solution = null;
-                forEach(this.rules, (function(recognizer) {
+                forEach(this.rules, (function (recognizer) {
                     if (recognizer.hasRoute(name)) {
                         path = recognizer.generate(name, params) + path;
                         solution = recognizer;
@@ -1482,33 +1518,35 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
             return path;
         }
     }, {});
-    Object.defineProperty(Grammar.prototype.recognize, "parameters", {get: function() {
-        return [[$traceurRuntime.type.string], []];
-    }});
+    Object.defineProperty(Grammar.prototype.recognize, "parameters", {
+        get: function () {
+            return [[$traceurRuntime.type.string], []];
+        }
+    });
     var CanonicalRecognizer = function CanonicalRecognizer(name) {
         this.name = name;
         this.rewrites = {};
         this.recognizer = new RouteRecognizer();
     };
     (createClass)(CanonicalRecognizer, {
-        config: function(mapping) {
+        config: function (mapping) {
             var $__0 = this;
             if (mapping instanceof Array) {
-                mapping.forEach((function(nav) {
+                mapping.forEach((function (nav) {
                     return $__0.configOne(nav);
                 }));
             } else {
                 this.configOne(mapping);
             }
         },
-        getCanonicalUrl: function(url) {
+        getCanonicalUrl: function (url) {
             if (url[0] === '.') {
                 url = url.substr(1);
             }
             if (url === '' || url[0] !== '/') {
                 url = '/' + url;
             }
-            forEach(this.rewrites, function(toUrl, fromUrl) {
+            forEach(this.rewrites, function (toUrl, fromUrl) {
                 if (fromUrl === '/') {
                     if (url === '/') {
                         url = toUrl;
@@ -1519,7 +1557,7 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
             });
             return url;
         },
-        configOne: function(mapping) {
+        configOne: function (mapping) {
             var $__0 = this;
             if (mapping.redirectTo) {
                 if (this.rewrites[mapping.path]) {
@@ -1542,14 +1580,14 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
             if (mapping.as) {
                 aliases = [mapping.as];
             } else {
-                aliases = mapObj(mapping.components, (function(componentName, viewportName) {
+                aliases = mapObj(mapping.components, (function (componentName, viewportName) {
                     return viewportName + ':' + componentName;
                 }));
                 if (mapping.components.default) {
                     aliases.push(mapping.components.default);
                 }
             }
-            aliases.forEach((function(alias) {
+            aliases.forEach((function (alias) {
                 return $__0.recognizer.add([{
                     path: mapping.path,
                     handler: mapping
@@ -1562,7 +1600,7 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
                 handler: withChild
             }]);
         },
-        recognize: function(url) {
+        recognize: function (url) {
             var canonicalUrl = this.getCanonicalUrl(url);
             var context = this.recognizer.recognize(canonicalUrl);
             if (context) {
@@ -1570,27 +1608,30 @@ angular.module('ngNewRouter').factory('$$grammar', ['$q', function ($q) {
             }
             return context;
         },
-        generate: function(name, params) {
+        generate: function (name, params) {
             return this.recognizer.generate(name, params);
         },
-        hasRoute: function(name) {
+        hasRoute: function (name) {
             return this.recognizer.hasRoute(name);
         }
     }, {});
     function copy(obj) {
         return JSON.parse(JSON.stringify(obj));
     }
+
     function forEach(obj, fn) {
-        Object.keys(obj).forEach((function(key) {
+        Object.keys(obj).forEach((function (key) {
             return fn(obj[key], key);
         }));
     }
+
     function mapObj(obj, fn) {
         var result = [];
-        Object.keys(obj).forEach((function(key) {
+        Object.keys(obj).forEach((function (key) {
             return result.push(fn(obj[key], key));
         }));
         return result;
     }
+
     return new Grammar();
 }]);
