@@ -28,7 +28,8 @@ module.controller("MainController", function ($scope, $router) {
                 navigation: "navigation",
                 main: "home",
                 footer: "footer"
-            }
+            },
+            as: "home"
         },
         {
             path: "/profile",
@@ -36,7 +37,8 @@ module.controller("MainController", function ($scope, $router) {
                 navigation: "navigation",
                 main: "profile",
                 footer: "footer"
-            }
+            },
+            as: "profile"
         },
         {
             path: "/about",
@@ -44,7 +46,8 @@ module.controller("MainController", function ($scope, $router) {
                 navigation: "navigation",
                 main: "about",
                 footer: "footer"
-            }
+            },
+            as: "about"
         }
     ]);
 });
